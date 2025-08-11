@@ -2,9 +2,9 @@ name: Build DeepFace GPU Docker Image
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main,v1 ]
   pull_request:
-    branches: [ main ]
+    branches: [ main,v1 ]
 
 jobs:
   build:
