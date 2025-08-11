@@ -26,8 +26,8 @@ jobs:
         context: .
         file: ./Dockerfile
         push: false
+        load: true
         tags: deepface-rest-gpu:latest
-        platforms: linux/amd64
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
