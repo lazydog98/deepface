@@ -44,10 +44,17 @@ COPY ./entrypoint.sh /app/deepface/api/src/entrypoint.sh
 # install deepface from pypi release (might be out-of-date)
 # RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org deepface
 # -----------------------------------
-# install dependencies - deepface with these dependency versions is working
+# First install the base requirements from requirements_local.txt
 RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org -r /app/requirements_local.txt
-# install deepface from source code (always up-to-date)
+
+# Then install deepface from source code (always up-to-date)
+# This will use requirements.txt for additional dependencies
 RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org -e .
+
+# Verify installation and debug if needed
+RUN python3 -c "import sys; print('Python version:', sys.version); print('Python path:', sys.path[:3])"
+RUN pip list | grep -E "(deepface|tensorflow)"
+RUN python3 -c "import deepface; print('✓ DeepFace installed successfully')" || (echo "DeepFace installation failed, debugging..." && ls -la /app && python3 -c "import sys; print(sys.path)" && pip show deepface)
 
 # -----------------------------------
 # some packages are optional in deepface. activate if your task depends on one.
@@ -61,6 +68,10 @@ ENV PYTHONUNBUFFERED=1
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 ENV TF_FORCE_GPU_ALLOW_GROWTH=true
+
+# -----------------------------------
+# Set Python path to ensure deepface module can be found
+ENV PYTHONPATH="/app:${PYTHONPATH}"
 
 # -----------------------------------
 # run the app (re-configure port if necessary)

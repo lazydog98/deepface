@@ -50,7 +50,22 @@ except Exception as e:
 echo "Testing DeepFace module import..."
 python3 -c "
 import os
+import sys
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
+
+print(f'Python path: {sys.path}')
+print('Checking installed packages...')
+
+try:
+    import pkg_resources
+    installed_packages = [d.project_name for d in pkg_resources.working_set]
+    if 'deepface' in installed_packages:
+        print('✓ DeepFace package found in installed packages')
+    else:
+        print('✗ DeepFace package not found in installed packages')
+        print('Available packages:', [p for p in installed_packages if 'deep' in p.lower() or 'face' in p.lower()])
+except Exception as e:
+    print(f'Error checking packages: {e}')
 
 try:
     import deepface
@@ -67,6 +82,9 @@ try:
         
 except ImportError as e:
     print(f'✗ Failed to import DeepFace: {e}')
+    print('Python sys.path:')
+    for path in sys.path:
+        print(f'  {path}')
     exit(1)
 except Exception as e:
     print(f'✗ Error testing DeepFace: {e}')

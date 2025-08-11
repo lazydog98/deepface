@@ -38,7 +38,7 @@ jobs:
         
         echo "=== Testing basic imports (without GPU) ==="
         # Test container can start and import modules correctly
-        timeout 60 docker run --rm deepface-rest-gpu:latest python3 -c "
+        if ! timeout 60 docker run --rm deepface-rest-gpu:latest python3 -c "
         print('Testing basic imports...')
         try:
             import tensorflow as tf
@@ -56,7 +56,22 @@ jobs:
             exit(1)
             
         print('✓ All basic imports successful - container is ready')
-        "
+        "; then
+            echo "✗ Basic import test failed"
+            echo "=== Debugging container ==="
+            docker run --rm deepface-rest-gpu:latest python3 -c "
+            import sys
+            print('Python version:', sys.version)
+            print('Python path:', sys.path)
+            import pkg_resources
+            installed = [d.project_name for d in pkg_resources.working_set]
+            print('Installed packages containing deepface or tensorflow:')
+            for pkg in installed:
+                if 'deepface' in pkg.lower() or 'tensorflow' in pkg.lower():
+                    print(f'  {pkg}')
+            "
+            exit 1
+        fi
         
         echo "=== Testing container startup with entrypoint ==="
         # Start container in background to test entrypoint
