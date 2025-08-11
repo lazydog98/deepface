@@ -11,5 +11,5 @@ tqdm>=4.30.0
 mtcnn>=0.1.0
 retina-face>=0.0.14
 fire>=0.4.0
-# Note: tensorflow is provided by base image tensorflow/tensorflow:2.13.1-gpu
+# Note: tensorflow is provided by base image tensorflow/tensorflow:2.13.0-gpu
 # keras==2.13.1  # Also provided by base image

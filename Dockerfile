@@ -1,5 +1,5 @@
 # base image with CUDA support for TensorFlow GPU
-FROM tensorflow/tensorflow:2.13.1-gpu
+FROM tensorflow/tensorflow:2.13.0-gpu
 LABEL org.opencontainers.image.source https://github.com/serengil/deepface
 
 # -----------------------------------
@@ -35,7 +35,7 @@ COPY ./README.md /app/
 COPY ./entrypoint.sh /app/deepface/api/src/entrypoint.sh
 
 # -----------------------------------
-# GPU support is already included in the base tensorflow/tensorflow:2.13.1-gpu image
+# GPU support is already included in the base tensorflow/tensorflow:2.13.0-gpu image
 # Note: nvidia-smi check is done at runtime in entrypoint.sh
 
 # if you plan to use face anti-spoofing, then activate this line
