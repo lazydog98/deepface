@@ -1,7 +1,7 @@
 # 🧠 Base image with TensorFlow + CUDA + cuDNN preinstalled
 FROM tensorflow/tensorflow:2.14.0-gpu
 
-LABEL org.opencontainers.image.source https://github.com/serengil/deepface
+LABEL org.opencontainers.image.source="https://github.com/serengil/deepface"
 
 # -----------------------------------
 # Create required folders
@@ -22,7 +22,12 @@ RUN apt-get update && apt-get install -y \
     cmake \
     libopenblas-dev \
     libatlas-base-dev \
+    python3-pip \
     && rm -rf /var/lib/apt/lists/*
+
+# -----------------------------------
+# Upgrade pip
+RUN python3 -m pip install --upgrade pip
 
 # -----------------------------------
 # Copy DeepFace source and config files
@@ -35,9 +40,6 @@ COPY ./README.md /app/
 COPY ./entrypoint.sh /app/deepface/api/src/entrypoint.sh
 
 # -----------------------------------
-# Upgrade pip
-RUN python3 -m pip install --upgrade pip
-
 # 🧹 Filter out tensorflow from requirements_local.txt to avoid conflicts
 RUN grep -v "tensorflow" /app/requirements_local.txt > /app/requirements_gpu.txt && \
     pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org -r /app/requirements_gpu.txt
