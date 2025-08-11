@@ -18,6 +18,10 @@ RUN apt-get update && apt-get install -y \
     libsm6 \
     libxext6 \
     libhdf5-dev \
+    libboost-all-dev \
+    cmake \
+    libopenblas-dev \
+    libatlas-base-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # -----------------------------------
@@ -31,12 +35,15 @@ COPY ./README.md /app/
 COPY ./entrypoint.sh /app/deepface/api/src/entrypoint.sh
 
 # -----------------------------------
-# Upgrade pip and install dependencies
+# Upgrade pip
 RUN python3 -m pip install --upgrade pip
 
-# DeepFace core dependencies
-RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org -r /app/requirements_local.txt
-RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org -e .
+# 🧹 Filter out tensorflow from requirements_local.txt to avoid conflicts
+RUN grep -v "tensorflow" /app/requirements_local.txt > /app/requirements_gpu.txt && \
+    pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org -r /app/requirements_gpu.txt
+
+# 🧠 Install DeepFace from source without re-installing dependencies
+RUN pip install --no-deps -e .
 
 # Optional: Face anti-spoofing
 RUN pip install torch==2.1.2
