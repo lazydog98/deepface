@@ -1,5 +1,5 @@
 # base image
-FROM python:3.8.12
+FROM python:3.12
 LABEL org.opencontainers.image.source https://github.com/serengil/deepface
 
 # -----------------------------------
@@ -36,10 +36,10 @@ COPY ./entrypoint.sh /app/deepface/api/src/entrypoint.sh
 
 # -----------------------------------
 # if you plan to use a GPU, you should install the 'tensorflow-gpu' package
-# RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org tensorflow-gpu
+RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org tensorflow-gpu
 
 # if you plan to use face anti-spoofing, then activate this line
-# RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org torch==2.1.2
+RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org torch==2.1.2
 # -----------------------------------
 # install deepface from pypi release (might be out-of-date)
 # RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org deepface
@@ -51,9 +51,9 @@ RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted
 
 # -----------------------------------
 # some packages are optional in deepface. activate if your task depends on one.
-# RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org cmake==3.24.1.1
-# RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org dlib==19.20.0
-# RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org lightgbm==2.3.1
+RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org cmake==3.28.3
+RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org dlib==19.24.2
+RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org lightgbm==4.3.0
 
 # -----------------------------------
 # environment variables
