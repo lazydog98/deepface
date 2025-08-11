@@ -15,7 +15,10 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      uses: docker/setup-buildx-action@v3
+      with:
+        driver-opts: |
+          image=moby/buildkit:buildx-stable-1
 
     - name: Build Docker image
       uses: docker/build-push-action@v5
@@ -24,3 +27,76 @@ jobs:
         file: ./Dockerfile
         push: false
         tags: deepface-rest-gpu:latest
+        platforms: linux/amd64
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Test Docker image build success
+      run: |
+        echo "=== Docker Image Build Verification ==="
+        docker images deepface-rest-gpu:latest
+        
+        echo "=== Testing basic imports (without GPU) ==="
+        # Test container can start and import modules correctly
+        timeout 60 docker run --rm deepface-rest-gpu:latest python3 -c "
+        print('Testing basic imports...')
+        try:
+            import tensorflow as tf
+            print(f'✓ TensorFlow {tf.__version__} imported successfully')
+            print(f'CUDA built: {tf.test.is_built_with_cuda()}')
+        except Exception as e:
+            print(f'✗ TensorFlow import failed: {e}')
+            exit(1)
+            
+        try:
+            import deepface
+            print('✓ DeepFace imported successfully')
+        except Exception as e:
+            print(f'✗ DeepFace import failed: {e}')
+            exit(1)
+            
+        print('✓ All basic imports successful - container is ready')
+        "
+        
+        echo "=== Testing container startup with entrypoint ==="
+        # Start container in background to test entrypoint
+        docker run -d --name deepface-test deepface-rest-gpu:latest &
+        CONTAINER_PID=$!
+        
+        # Wait a bit for startup
+        sleep 15
+        
+        # Check container logs for successful startup indicators
+        echo "=== Container startup logs ==="
+        docker logs deepface-test 2>&1 | head -30
+        
+        # Check if container is still running (not crashed)
+        if docker ps --filter "name=deepface-test" --format "table {{.Names}}\t{{.Status}}" | grep -q "deepface-test"; then
+            echo "✓ Container started successfully and is running"
+        else
+            echo "✗ Container failed to start or crashed"
+            docker logs deepface-test
+            exit 1
+        fi
+        
+        # Cleanup
+        docker stop deepface-test || true
+        docker rm deepface-test || true
+        
+        echo "=== Build and startup test completed successfully ==="
+
+  # Optional: GPU test job (only runs if GPU runners are available)
+  gpu-test:
+    runs-on: ubuntu-latest
+    needs: build
+    if: false  # Set to true if you have GPU runners available
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Build and test with GPU
+      run: |
+        echo "=== GPU Test Job ==="
+        echo "This job would test GPU functionality if GPU runners were available"
+        echo "To enable: set 'if: true' and configure GPU runners"

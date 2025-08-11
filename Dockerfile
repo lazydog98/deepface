@@ -1,5 +1,5 @@
-# base image
-FROM python:3.8.12
+# base image with CUDA support for TensorFlow GPU
+FROM tensorflow/tensorflow:2.13.1-gpu
 LABEL org.opencontainers.image.source https://github.com/serengil/deepface
 
 # -----------------------------------
@@ -35,8 +35,8 @@ COPY ./README.md /app/
 COPY ./entrypoint.sh /app/deepface/api/src/entrypoint.sh
 
 # -----------------------------------
-# if you plan to use a GPU, you should install the 'tensorflow-gpu' package
-# RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org tensorflow-gpu
+# GPU support is already included in the base tensorflow/tensorflow:2.13.1-gpu image
+# Note: nvidia-smi check is done at runtime in entrypoint.sh
 
 # if you plan to use face anti-spoofing, then activate this line
 # RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org torch==2.1.2
@@ -58,6 +58,9 @@ RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted
 # -----------------------------------
 # environment variables
 ENV PYTHONUNBUFFERED=1
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+ENV TF_FORCE_GPU_ALLOW_GROWTH=true
 
 # -----------------------------------
 # run the app (re-configure port if necessary)
