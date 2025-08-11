@@ -36,7 +36,9 @@ COPY ./entrypoint.sh /app/deepface/api/src/entrypoint.sh
 
 # -----------------------------------
 # if you plan to use a GPU, you should install the 'tensorflow-gpu' package
-RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org tensorflow-gpu
+#RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org tensorflow-gpu
+RUN python3 -m pip install --upgrade pip && \
+    python3 -m pip install 'tensorflow[and-cuda]'
 
 # if you plan to use face anti-spoofing, then activate this line
 RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org torch==2.1.2
@@ -48,6 +50,7 @@ RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted
 RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org -r /app/requirements_local.txt
 # install deepface from source code (always up-to-date)
 RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org -e .
+
 
 # -----------------------------------
 # some packages are optional in deepface. activate if your task depends on one.
