@@ -32,7 +32,7 @@ COPY ./requirements_local /app/requirements_local.txt
 COPY ./package_info.json /app/
 COPY ./setup.py /app/
 COPY ./README.md /app/
-COPY ./entrypoint_simple.sh /app/deepface/api/src/entrypoint.sh
+COPY ./entrypoint_gpu.sh /app/deepface/api/src/entrypoint.sh
 RUN chmod +x /app/deepface/api/src/entrypoint.sh
 
 # -----------------------------------
