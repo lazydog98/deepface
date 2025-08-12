@@ -4,7 +4,7 @@ echo "=== DeepFace GPU Docker Container Starting ==="
 
 # Check NVIDIA GPU availability
 echo "Checking GPU availability..."
-if command -v nvidia-smi &> /dev/null; then
+if command -v nvidia-smi >/dev/null 2>&1; then
     echo "NVIDIA GPU detected:"
     nvidia-smi --query-gpu=name,memory.total,memory.free --format=csv,noheader,nounits 2>/dev/null || echo "nvidia-smi command failed"
 else

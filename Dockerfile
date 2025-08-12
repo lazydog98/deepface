@@ -32,7 +32,8 @@ COPY ./requirements_local /app/requirements_local.txt
 COPY ./package_info.json /app/
 COPY ./setup.py /app/
 COPY ./README.md /app/
-COPY ./entrypoint.sh /app/deepface/api/src/entrypoint.sh
+COPY ./entrypoint_simple.sh /app/deepface/api/src/entrypoint.sh
+RUN chmod +x /app/deepface/api/src/entrypoint.sh
 
 # -----------------------------------
 # GPU support is already included in the base tensorflow/tensorflow:2.13.0-gpu image
